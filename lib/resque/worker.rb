@@ -233,7 +233,7 @@ module Resque
 
     # Reports the exception and marks the job as failed
     def report_failed_job(job,exception)
-      log "#{job.inspect} failed: #{exception.inspect}"
+      log_error "#{job.inspect} failed: #{exception.inspect}"
       begin
         job.fail(exception)
       rescue Object => exception
@@ -722,6 +722,10 @@ module Resque
 
     # Log a message to Resque.logger
     # can't use alias_method since info/debug are private methods
+    def log_error(message)
+      error(message)
+    end
+
     def log(message)
       info(message)
     end
