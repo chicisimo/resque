@@ -408,7 +408,7 @@ module Resque
     # Schedule this worker for shutdown. Will finish processing the
     # current job.
     def shutdown
-      log 'Exiting...'
+      log_error 'Exiting...'
       @shutdown = true
     end
 
