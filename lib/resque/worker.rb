@@ -213,7 +213,7 @@ module Resque
       unregister_worker
     rescue Exception => exception
       unless exception.class == SystemExit && !@child && run_at_exit_hooks
-        log "Failed to start worker : #{exception.inspect}"
+        log_error "Failed to start worker : #{exception.inspect}"
 
         unregister_worker(exception)
       end
@@ -237,12 +237,12 @@ module Resque
       begin
         job.fail(exception)
       rescue Object => exception
-        log "Received exception when reporting failure: #{exception.inspect}"
+        log_error "Received exception when reporting failure: #{exception.inspect}"
       end
       begin
         failed!
       rescue Object => exception
-        log "Received exception when increasing failed jobs counter (redis issue) : #{exception.inspect}"
+        log_error "Received exception when increasing failed jobs counter (redis issue) : #{exception.inspect}"
       end
     end
 
@@ -273,8 +273,8 @@ module Resque
 
       nil
     rescue Exception => e
-      log "Error reserving job: #{e.inspect}"
-      log e.backtrace.join("\n")
+      log_error "Error reserving job: #{e.inspect}"
+      log_error e.backtrace.join("\n")
       raise e
     end
 
@@ -286,11 +286,11 @@ module Resque
         redis.client.reconnect
       rescue Redis::BaseConnectionError
         if (tries += 1) <= 3
-          log "Error reconnecting to Redis; retrying"
+          log_error "Error reconnecting to Redis; retrying"
           sleep(tries)
           retry
         else
-          log "Error reconnecting to Redis; quitting"
+          log_error "Error reconnecting to Redis; quitting"
           raise
         end
       end
